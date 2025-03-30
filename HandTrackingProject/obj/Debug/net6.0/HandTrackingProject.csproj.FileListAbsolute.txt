@@ -40,3 +40,4 @@ C:\Users\tingt\Downloads\KinectTest\HandTrackingProject\obj\Debug\net6.0\refint\
 C:\Users\tingt\Downloads\KinectTest\HandTrackingProject\obj\Debug\net6.0\HandTrackingProject.pdb
 C:\Users\tingt\Downloads\KinectTest\HandTrackingProject\obj\Debug\net6.0\HandTrackingProject.genruntimeconfig.cache
 C:\Users\tingt\Downloads\KinectTest\HandTrackingProject\obj\Debug\net6.0\ref\HandTrackingProject.dll
+C:\Users\tingt\Downloads\KinectTest\HandTrackingProject\obj\Debug\net6.0\HandTrackingProject.sourcelink.json

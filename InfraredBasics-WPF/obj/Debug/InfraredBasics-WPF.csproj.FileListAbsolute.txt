@@ -1,0 +1,17 @@
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\InfraredBasics-WPF.csproj.AssemblyReference.cache
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\MainWindow.baml
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\MainWindow.g.cs
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\App.g.cs
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\InfraredBasics-WPF_MarkupCompile.cache
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\InfraredBasics-WPF.g.resources
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\InfraredBasics_WPF.Properties.Resources.resources
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\InfraredBasics-WPF.csproj.GenerateResource.cache
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\InfraredBasics-WPF.csproj.CoreCompileInputs.cache
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\bin\Debug\InfraredBasics-WPF.exe.config
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\bin\Debug\InfraredBasics-WPF.exe
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\bin\Debug\InfraredBasics-WPF.pdb
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\bin\Debug\Microsoft.Kinect.dll
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\bin\Debug\Microsoft.Kinect.xml
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\Infrared.CCACB279.Up2Date
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\InfraredBasics-WPF.exe
+C:\Users\tingt\Downloads\KinectTest\InfraredBasics-WPF\obj\Debug\InfraredBasics-WPF.pdb

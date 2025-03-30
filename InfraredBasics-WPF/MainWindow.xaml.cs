@@ -3,7 +3,7 @@
 //     Copyright (c) Microsoft Corporation.  All rights reserved.
 // </copyright>
 //------------------------------------------------------------------------------
-
+using InfraredBasics_WPF.Properties;
 namespace Microsoft.Samples.Kinect.InfraredBasics
 {
     using System;
@@ -92,7 +92,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
 
             if (null == this.sensor)
             {
-                this.statusBarText.Text = Properties.Resources.NoKinectReady;
+                this.statusBarText.Text = InfraredBasics_WPF.Properties.Resources.NoKinectReady;
             }
         }
 
