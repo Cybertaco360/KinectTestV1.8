@@ -1,40 +1,48 @@
 import cv2
-from cvzone.HandTrackingModule import HandDetector
+import numpy as np
 import socket
 import os
+from cvzone.HandTrackingModule import HandDetector
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 width, height = 1920, 1080
-cap = cv2.VideoCapture(0)
-cap.set(3, width)
-cap.set(4, height)
 
+# Initialize UDP sockets
+infrared_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+infrared_socket.bind(("127.0.0.1", 5052))  # Match the C# sender's IP and port
+
+unity_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+unity_server_port = ("127.0.0.1", 5053)  # Port for sending data to Unity
+
+# Initialize OpenCV hand detector
 detector = HandDetector(detectionCon=0.8, maxHands=1)
 
-communication = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_port = ("127.0.0.1", 5052)
-
 while True:
-    success, img = cap.read()
-    if not success:
-        continue  # Skip frame if camera fails
+    # Receive infrared image data
+    data, _ = infrared_socket.recvfrom(640 * 480 * 2)  # 640x480 resolution, 2 bytes per pixel (Gray16)
+    infrared_image = np.frombuffer(data, dtype=np.uint16).reshape((480, 640))
 
-    img = cv2.resize(img, (width, height))  # Ensure square input
-    hands, img = detector.findHands(img)
+    # Normalize and convert to 8-bit for display
+    infrared_image = cv2.normalize(infrared_image, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
 
-    data = []
+    # Process the infrared image for hand tracking
+    hands, img = detector.findHands(infrared_image)
+
+    hand_data = []
     if hands:
         hand = hands[0]
         lmList = hand['lmList']
         for lm in lmList:
-            data.extend([lm[0], height - lm[1], lm[2]])
+            hand_data.extend([lm[0], height - lm[1], lm[2]])
 
-        communication.sendto(str.encode(str(data)), server_port)
+        # Send hand tracking data to Unity
+        unity_socket.sendto(str.encode(str(hand_data)), unity_server_port)
 
-    cv2.imshow("Image", img)
+    # Display the infrared image
+    cv2.imshow("Infrared Image", infrared_image)
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-cap.release()
 cv2.destroyAllWindows()

@@ -4,6 +4,9 @@
 // </copyright>
 //------------------------------------------------------------------------------
 using InfraredBasics_WPF.Properties;
+using System.Net;
+using System.Net.Sockets;
+
 namespace Microsoft.Samples.Kinect.InfraredBasics
 {
     using System;
@@ -13,7 +16,6 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Microsoft.Kinect;
-    using HandTrackingProject; 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -34,12 +36,17 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         /// </summary>
         private byte[] colorPixels;
 
+        private UdpClient udpClient;
+        private IPEndPoint remoteEndPoint;
+
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
         /// </summary>
         public MainWindow()
         {
             InitializeComponent();
+            udpClient = new UdpClient();
+            remoteEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5052); // Match Python script's port
         }
 
         /// <summary>
@@ -107,6 +114,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             {
                 this.sensor.Stop();
             }
+            udpClient.Close();
         }
 
         /// <summary>
@@ -128,8 +136,22 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                         new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
                         this.colorPixels,
                         this.colorBitmap.PixelWidth * colorFrame.BytesPerPixel,
-                        0);
+                         0);
+
+                    SendInfraredData(this.colorPixels);
                 }
+            }
+        }
+
+        private void SendInfraredData(byte[] infraredData)
+        {
+            try
+            {
+                udpClient.Send(infraredData, infraredData.Length, remoteEndPoint);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error sending data: {ex.Message}");
             }
         }
     }
