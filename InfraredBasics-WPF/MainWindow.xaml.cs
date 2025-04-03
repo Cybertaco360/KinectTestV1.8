@@ -13,7 +13,7 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
     using System.Windows.Media;
     using System.Windows.Media.Imaging;
     using Microsoft.Kinect;
-
+    using HandTrackingProject; 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>

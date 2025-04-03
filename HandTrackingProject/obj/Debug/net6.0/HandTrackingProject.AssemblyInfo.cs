@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HandTrackingProject")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1e9fc99ff1e416e986d4ad3e79933da73019d9cd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+048bdb74e95a6a4d8d62d7e60a7da7ffa9323ece")]
 [assembly: System.Reflection.AssemblyProductAttribute("HandTrackingProject")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HandTrackingProject")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
