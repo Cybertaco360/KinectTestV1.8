@@ -1,65 +1,38 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="MainWindow.xaml.cs" company="Microsoft">
-//     Copyright (c) Microsoft Corporation.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-using InfraredBasics_WPF.Properties;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using Microsoft.Kinect;
+using System.Diagnostics;
+using System.Windows.Media;
 
 namespace Microsoft.Samples.Kinect.InfraredBasics
 {
-    using System;
-    using System.Globalization;
-    using System.IO;
-    using System.Windows;
-    using System.Windows.Media;
-    using System.Windows.Media.Imaging;
-    using Microsoft.Kinect;
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
-        /// <summary>
-        /// Active Kinect sensor
-        /// </summary>
         private KinectSensor sensor;
-
-        /// <summary>
-        /// Bitmap that will hold color information
-        /// </summary>
         private WriteableBitmap colorBitmap;
-
-        /// <summary>
-        /// Intermediate storage for the color data received from the camera
-        /// </summary>
         private byte[] colorPixels;
 
-        private UdpClient udpClient;
-        private IPEndPoint remoteEndPoint;
+        private TcpClient tcpClient;
+        private NetworkStream networkStream;
+        private const string serverIp = "127.0.0.1";
+        private const int serverPort = 5052;
 
-        /// <summary>
-        /// Initializes a new instance of the MainWindow class.
-        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
-            udpClient = new UdpClient();
-            remoteEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5052); // Match Python script's port
+            AllocConsole();
         }
 
-        /// <summary>
-        /// Execute startup tasks
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")]
+        private static extern bool AllocConsole();
+
         private void WindowLoaded(object sender, RoutedEventArgs e)
         {
-            // Look through all sensors and start the first connected one.
-            // This requires that a Kinect is connected at the time of app startup.
-            // To make your app robust against plug/unplug, 
-            // it is recommended to use KinectSensorChooser provided in Microsoft.Kinect.Toolkit (See components in Toolkit Browser).
+            // Look through all sensors and start the first connected one
             foreach (var potentialSensor in KinectSensor.KinectSensors)
             {
                 if (potentialSensor.Status == KinectStatus.Connected)
@@ -71,22 +44,12 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
 
             if (null != this.sensor)
             {
-                // Turn on the color stream to receive color frames
                 this.sensor.ColorStream.Enable(ColorImageFormat.InfraredResolution640x480Fps30);
-
-                // Allocate space to put the pixels we'll receive
                 this.colorPixels = new byte[this.sensor.ColorStream.FramePixelDataLength];
-
-                // This is the bitmap we'll display on-screen
-                this.colorBitmap = new WriteableBitmap(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Gray16, null);
-
-                // Set the image we display to point to the bitmap where we'll put the image data
+                this.colorBitmap = new WriteableBitmap(this.sensor.ColorStream.FrameWidth, this.sensor.ColorStream.FrameHeight, 96.0, 96.0, PixelFormats.Gray16, null); // Updated line
                 this.Image.Source = this.colorBitmap;
-
-                // Add an event handler to be called whenever there is new color frame data
                 this.sensor.ColorFrameReady += this.SensorColorFrameReady;
 
-                // Start the sensor!
                 try
                 {
                     this.sensor.Start();
@@ -95,6 +58,10 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
                 {
                     this.sensor = null;
                 }
+
+                // Establish a TCP connection to the server
+                tcpClient = new TcpClient(serverIp, serverPort);
+                networkStream = tcpClient.GetStream();
             }
 
             if (null == this.sensor)
@@ -103,40 +70,32 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
             }
         }
 
-        /// <summary>
-        /// Execute shutdown tasks
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
         private void WindowClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (null != this.sensor)
+            if (sensor != null)
             {
-                this.sensor.Stop();
+                sensor.Stop();
             }
-            udpClient.Close();
+            if (tcpClient != null)
+            {
+                networkStream.Close();
+                tcpClient.Close();
+            }
         }
 
-        /// <summary>
-        /// Event handler for Kinect sensor's ColorFrameReady event
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
         private void SensorColorFrameReady(object sender, ColorImageFrameReadyEventArgs e)
         {
             using (ColorImageFrame colorFrame = e.OpenColorImageFrame())
             {
                 if (colorFrame != null)
                 {
-                    // Copy the pixel data from the image to a temporary array
                     colorFrame.CopyPixelDataTo(this.colorPixels);
 
-                    // Write the pixel data into our bitmap
                     this.colorBitmap.WritePixels(
                         new Int32Rect(0, 0, this.colorBitmap.PixelWidth, this.colorBitmap.PixelHeight),
                         this.colorPixels,
                         this.colorBitmap.PixelWidth * colorFrame.BytesPerPixel,
-                         0);
+                        0);
 
                     SendInfraredData(this.colorPixels);
                 }
@@ -147,7 +106,14 @@ namespace Microsoft.Samples.Kinect.InfraredBasics
         {
             try
             {
-                udpClient.Send(infraredData, infraredData.Length, remoteEndPoint);
+                // Write the image data to the TCP stream
+                Console.WriteLine($"Sending {infraredData.Length} bytes...");
+
+                // Send the data in one go over the TCP stream
+                networkStream.Write(infraredData, 0, infraredData.Length);
+                networkStream.Flush();
+
+                Console.WriteLine("Image data sent successfully!");
             }
             catch (Exception ex)
             {

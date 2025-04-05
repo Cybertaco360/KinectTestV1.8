@@ -64,9 +64,4 @@
     <Resource Include="Images\Logo.png" />
     <Resource Include="Images\Status.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="HandTrackingProject">
-      <HintPath>..\HandTrackingProject\bin\Debug\net6.0\HandTrackingProject.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
